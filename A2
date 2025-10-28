@@ -1,0 +1,136 @@
+'''Regression Analysis:(Any one)
+A. Predict the price of the Uber ride from a given pickup point to the agreed drop-off
+location. Perform following tasks:
+1. Pre-process the dataset.
+2. Identify outliers.
+3. Check the correlation.
+4. Implement linear regression and ridge, Lasso regression models.
+5. Evaluate the models and compare their respective scores like R2, RMSE, etc.
+Dataset link: https://www.kaggle.com/datasets/yasserh/uber-fares-dataset'''
+
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+import warnings
+warnings.filterwarnings("ignore")
+
+df = pd.read_csv('uber.csv')
+df
+
+# Checking dimensions of the data frame
+df.shape
+
+# Variable descriptions
+df.info()
+
+#Checking Datatypes of each column
+df.dtypes
+
+# Get initial statistics
+df.describe()
+
+#Converting pickup datetime to hrs and weeks for simplification
+df['pickup_datetime'] = pd.to_datetime(df['pickup_datetime'])
+df['hour'] = df['pickup_datetime'].dt.hour
+df['day_of_week'] = df['pickup_datetime'].dt.dayofweek
+
+#Removing Unneccessary Columns
+df = df.drop(columns=['Unnamed: 0', 'key','pickup_datetime'])
+df
+
+#Checking for Null Values
+df.isnull().sum()
+
+#Filling Null Values
+columns = ['dropoff_longitude','dropoff_latitude']
+for column in columns:
+    df.fillna(df[column].mean(),axis = 0,inplace = True)
+
+#Checking For null values
+df.isnull().sum()
+
+sns.boxplot(x=df["fare_amount"])
+plt.show()
+
+# Calculate the IQR for the 'fare_amount' column
+Q1 = df["fare_amount"].quantile(0.25)
+Q3 = df["fare_amount"].quantile(0.75)
+IQR = Q3 - Q1
+
+# Define a threshold (e.g., 1.5 times the IQR) to identify outliers
+threshold = 1.5
+lower_bound = Q1 - threshold * IQR
+upper_bound = Q3 + threshold * IQR
+
+# Remove outliers
+df_no_outliers = df[(df["fare_amount"] >= lower_bound) & (df["fare_amount"] <= upper_bound)]
+
+# Visualize the 'fare_amount' distribution without outliers
+sns.boxplot(x=df_no_outliers["fare_amount"])
+plt.show()
+
+#Using Plotly because matplotlib's heatmap is glitched in latest Jupyter notebook
+correlation_matrix = df.corr()
+
+fig = px.imshow(
+    correlation_matrix,
+    text_auto=True,
+    color_continuous_scale='RdBu_r',
+    title='Correlation Matrix Heatmap'
+)
+
+fig.update_layout(
+    title_text='Correlation Matrix Heatmap',
+    title_x=0.5,
+    width=1000,
+    height=700
+)
+
+fig.show()
+
+# Separating features and target variable
+X = df.drop(columns=['fare_amount'])  # Dropping the Target Component for training
+y = df['fare_amount']  # As it is the Target variable (Type of wine)
+
+X
+y
+
+#Splitting the data into training and testing
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+#Scaling the data using Standard Scalar
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.metrics import r2_score, mean_squared_error
+
+# Implement Linear Regression
+linear_model = LinearRegression()
+linear_model.fit(X_train_scaled, y_train)
+y_pred_linear = linear_model.predict(X_test_scaled)
+
+# Implement Ridge Regression
+ridge_model = Ridge(alpha=1.0)
+ridge_model.fit(X_train_scaled, y_train)
+y_pred_ridge = ridge_model.predict(X_test_scaled)
+
+# Implement Lasso Regression
+lasso_model = Lasso(alpha=0.1)
+lasso_model.fit(X_train_scaled, y_train)
+y_pred_lasso = lasso_model.predict(X_test_scaled)
+
+def evaluate_model(y_true, y_pred, model_name):
+    r2 = r2_score(y_true, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+    print(f"{model_name} - R2 Score: {r2:.4f}, RMSE: {rmse:.2f}")
+
+evaluate_model(y_test, y_pred_linear, "Linear Regression")
+evaluate_model(y_test, y_pred_ridge, "Ridge Regression")
+evaluate_model(y_test, y_pred_lasso, "Lasso Regression")
