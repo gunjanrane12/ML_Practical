@@ -1,0 +1,78 @@
+'''Ensemble Learning (Any one)
+A. Implement Random Forest Classifier model to predict the safety of the car.
+Dataset link: https://www.kaggle.com/datasets/elikplim/car-evaluation-data-set'''
+
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+
+import category_encoders as ce
+
+df = pd.read_csv("car_evaluation.csv")
+
+df.shape
+
+df.head()
+
+col_names = ['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'class']
+
+df.columns = col_names
+
+df.head()
+
+df.info()
+
+col_names = ['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'class']
+
+for col in col_names:
+    print(df[col].value_counts())
+
+#target variable
+df['class'].value_counts()
+
+df.isnull().sum()
+
+X = df.drop(['class'], axis=1)
+
+y = df['class']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.33, random_state = 42)
+
+X_train.shape, X_test.shape
+
+X_train.dtypes
+
+X_train.head()
+
+encoder = ce.OrdinalEncoder(cols=['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety'])
+
+X_train = encoder.fit_transform(X_train)
+
+X_test = encoder.transform(X_test)
+
+X_train.head()
+
+X_test.head()
+
+rfc = RandomForestClassifier(random_state=0)
+
+rfc.fit(X_train, y_train)
+
+#predictions
+y_pred = rfc.predict(X_test)
+
+print('Model accuracy score with 10 decision-trees : {0:0.4f}'. format(accuracy_score(y_test, y_pred)))
+
+rfc_50 = RandomForestClassifier(n_estimators=50, random_state=0)
+rfc_50.fit(X_train, y_train)
+
+y_pred_50 = rfc_50.predict(X_test)
+
+print('Model accuracy score with 50 decision-trees : {0:0.4f}'. format(accuracy_score(y_test, y_pred_50)))
