@@ -6,10 +6,10 @@ if asg.isdigit():
     asg = int(asg)
     if asg < 7:
         link = f"https://tinyurl.com/mlearnprac/A{asg}.ipynb"
-        filename = f"A{asg}.ipynb"
+        filename = f"Untitled_a.ipynb"
     else:
         link = f"https://tinyurl.com/dmvpra/A{asg-6}.ipynb"
-        filename = f"A{asg}.ipynb"
+        filename = f"Untitled_a.ipynb"
 else:
     link = f"https://tinyurl.com/dmvpra/{asg}"
     filename = asg
