@@ -11,7 +11,7 @@ if asg.isdigit():
         link = f"https://tinyurl.com/dmvpra/A{asg-6}.ipynb"
         filename = f"A{asg}.ipynb"
 else:
-    link = f"https://tinyurl.com/mlearnprac/{asg}"
+    link = f"https://tinyurl.com/dmvpra/{asg}"
     filename = asg
 
 a = rq.get(link)
