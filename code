@@ -1,10 +1,19 @@
 import requests as rq
-asg=int(input())
-if asg<7:
-    link = f"https://tinyurl.com/mlearnprac/A{asg}.ipynb"
-    
+
+asg = input().strip()
+
+if asg.isdigit():
+    asg = int(asg)
+    if asg < 7:
+        link = f"https://tinyurl.com/mlearnprac/A{asg}.ipynb"
+        filename = f"A{asg}.ipynb"
+    else:
+        link = f"https://tinyurl.com/dmvpra/A{asg-6}.ipynb"
+        filename = f"A{asg}.ipynb"
 else:
-    link = f"https://tinyurl.com/dmvpra/A{asg-6}.ipynb"
-a=rq.get(link)
-with open("untitled_a.ipynb","wb") as f:
+    link = f"https://tinyurl.com/mlearnprac/{asg}"
+    filename = asg
+
+a = rq.get(link)
+with open(filename, "wb") as f:
     f.write(a.content)
