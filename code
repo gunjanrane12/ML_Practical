@@ -5,6 +5,6 @@ if asg<7:
     
 else:
     link = f"https://tinyurl.com/dmvpra/A{asg-6}.ipynb"
-a=rq.get(link).content
+a=rq.get(link)
 with open("untitled_a.ipynb","wb") as f:
-    f.write(a)
+    f.write(a.content)
