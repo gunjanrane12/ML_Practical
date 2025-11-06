@@ -1,7 +1,7 @@
 import requests as rq
 
-if not asq:
-    asq=input()
+if not asg:
+    asg=input()
 
 
 if asg.isdigit():
