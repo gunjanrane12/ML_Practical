@@ -1,21 +1,21 @@
 import requests as rq
-dmv=["1_sample.csv","2_api_key.txt","3_tele_com.csv","4_RealEstate_price.csv","5_AirQuality.csv","6_Retail_Sales.csv"]
-ml=["Wine.csv","car_evaluation.csv","uber.csv"]
-asg = input().strip()
+
+
+
 
 if asg.isdigit():
     asg = int(asg)
-    if asg < 7:
-        link = f"https://tinyurl.com/mlearnprac/A{asg}.ipynb"
+    if asg < 6:
+        link = f"https://tinyurl.com/irpra/A{asg}.ipynb"
+        filename = f"Untitled_a.ipynb"
+    elif asg==8:
+        link = f"https://tinyurl.com/bifpra/A{4}.ipynb"
         filename = f"Untitled_a.ipynb"
     else:
-        link = f"https://tinyurl.com/dmvpra/A{asg-6}.ipynb"
+        link = f"https://tinyurl.com/bifpra/A{asg-5}.ipynb"
         filename = f"Untitled_a.ipynb"
 else:
-    if asg in dmv:
-        link = f"https://tinyurl.com/dmvpra/{asg}"
-    else:
-        link = f"https://tinyurl.com/mlearnprac/{asg}"
+    link = f"https://tinyurl.com/bifpra/{asg}"
     filename = asg
 
 a = rq.get(link)
