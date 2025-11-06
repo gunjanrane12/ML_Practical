@@ -8,9 +8,6 @@ if asg.isdigit():
     if asg < 6:
         link = f"https://tinyurl.com/irpra/IR_{asg}.ipynb"
         filename = f"Untitled_a.ipynb"
-    elif asg==8:
-        link = f"https://tinyurl.com/bifpra/BIF_{4}.ipynb"
-        filename = f"Untitled_a.ipynb"
     else:
         link = f"https://tinyurl.com/bifpra/BIF_{asg-5}.ipynb"
         filename = f"Untitled_a.ipynb"
