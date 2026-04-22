@@ -5,7 +5,7 @@ import os
 folder = input("Enter folder number: ")
 
 # GitHub repo API URL
-api_url = f"https://api.github.com/repos/gunjanrane12/ML_Practical/contents/{folder}"
+api_url = f"https://api.github.com/repos/GauravKumbhar0491/CL-3/contents/{folder}"
 
 # Create local folder
 os.makedirs(folder, exist_ok=True)
