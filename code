@@ -1,21 +1,29 @@
-import requests as rq
+import requests
+import os
 
-if 'asg' not in globals() or not asg:
-    asg = input()
+# Take input
+folder = input("Enter folder number: ")
 
+# GitHub repo API URL
+api_url = f"https://api.github.com/repos/gunjanrane12/ML_Practical/contents/{folder}"
 
-if asg.isdigit():
-    asg = int(asg)
-    if asg < 6:
-        link = f"https://tinyurl.com/irpra/IR_{asg}.ipynb"
-        filename = f"Untitled_a.ipynb"
-    else:
-        link = f"https://tinyurl.com/bifpra/BIF_{asg-5}.ipynb"
-        filename = f"Untitled_a.ipynb"
-else:
-    link = f"https://tinyurl.com/bifpra/{asg}"
-    filename = asg
+# Create local folder
+os.makedirs(folder, exist_ok=True)
 
-a = rq.get(link)
-with open(filename, "wb") as f:
-    f.write(a.content)
+# Get list of files
+response = requests.get(api_url)
+data = response.json()
+
+# Download files
+for file in data:
+    if file["type"] == "file":
+        download_url = file["download_url"]
+        file_path = os.path.join(folder, file["name"])
+        
+        file_data = requests.get(download_url)
+        
+        with open(file_path, "wb") as f:
+            f.write(file_data.content)
+        
+        
+
