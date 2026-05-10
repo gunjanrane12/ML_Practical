@@ -1,29 +1,66 @@
 import requests
 import os
 
-# Take input
 folder = input("Enter folder number: ")
 
-# GitHub repo API URL
-api_url = f"https://api.github.com/repos/GauravKumbhar0491/CL-3/contents/{folder}"
+api_urls = [
+    f"https://api.github.com/repos/GauravKumbhar0491/CL-3/contents/{folder}"
+]
 
-# Create local folder
+TOKEN = os.getenv("GITHUB_TOKEN")
+
+headers = {
+    "Authorization": f"Bearer {TOKEN}",
+    "Accept": "application/vnd.github+json"
+}
+
 os.makedirs(folder, exist_ok=True)
 
-# Get list of files
-response = requests.get(api_url)
-data = response.json()
+response = None
 
-# Download files
-for file in data:
-    if file["type"] == "file":
-        download_url = file["download_url"]
-        file_path = os.path.join(folder, file["name"])
-        
-        file_data = requests.get(download_url)
-        
-        with open(file_path, "wb") as f:
-            f.write(file_data.content)
-        
-        
+for url in api_urls:
 
+    try:
+
+        r = requests.get(url, headers=headers, timeout=10)
+
+        if r.status_code == 200:
+
+            response = r
+            break
+
+    except requests.RequestException:
+        pass
+
+if response is not None:
+
+    try:
+
+        data = response.json()
+
+        for file in data:
+
+            if file["type"] == "file":
+
+                download_url = file["download_url"]
+                file_path = os.path.join(folder, file["name"])
+
+                try:
+
+                    file_data = requests.get(
+                        download_url,
+                        headers=headers,
+                        timeout=10
+                    )
+
+                    if file_data.status_code == 200:
+
+                        with open(file_path, "wb") as f:
+
+                            f.write(file_data.content)
+
+                except requests.RequestException:
+                    pass
+
+    except Exception:
+        pass
