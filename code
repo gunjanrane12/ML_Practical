@@ -2,25 +2,60 @@ import requests
 import os
 
 # Take input
-folder = input("Enter folder number: ")
+folder = input("Enter folder number: ").strip()
 
-# GitHub repo API URL
-api_url = f"https://api.github.com/repos/GauravKumbhar0491/CL-3/contents/{folder}"
+# Multiple GitHub API URLs
+api_urls = [
+    f"https://api.github.com/repos/GauravKumbhar0491/CL-3/contents/{folder}",
+    f"https://api.github.com/repos/gunjanrane12/CL-3/contents/{folder}",
+    f"https://api.github.com/repos/Sanjivani17/CL-3/contents/{folder}"
+]
 
 # Create local folder
 os.makedirs(folder, exist_ok=True)
 
-# Get list of files
-response = requests.get(api_url)
+response = None
+
+# Try links one by one
+for url in api_urls:
+
+    try:
+        r = requests.get(url, timeout=10)
+
+        if r.status_code == 200:
+            response = r
+            break
+
+    except Exception:
+        pass
+
+# Stop if all failed
+if response is None:
+    exit()
+
+# Get file list
 data = response.json()
+
+# If single file instead of folder
+if isinstance(data, dict):
+    data = [data]
 
 # Download files
 for file in data:
+
     if file["type"] == "file":
+
         download_url = file["download_url"]
         file_path = os.path.join(folder, file["name"])
-        
-        file_data = requests.get(download_url)
-        
-        with open(file_path, "wb") as f:
-            f.write(file_data.content)
+
+        try:
+
+            file_data = requests.get(download_url, timeout=10)
+
+            if file_data.status_code == 200:
+
+                with open(file_path, "wb") as f:
+                    f.write(file_data.content)
+
+        except Exception:
+            pass
