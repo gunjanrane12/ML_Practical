@@ -1,66 +1,56 @@
 import requests
 import os
 
-folder = input("Enter folder number: ")
+folder = input("Enter folder number: ").strip()
 
-api_urls = [
-    f"https://api.github.com/repos/GauravKumbhar0491/CL-3/contents/{folder}"
-]
+api_url = f"https://api.github.com/repos/GauravKumbhar0491/CL-3/contents/{folder}"
 
-TOKEN = "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"
+TOKEN = "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"
 
 headers = {
     "Authorization": f"Bearer {TOKEN}",
     "Accept": "application/vnd.github+json"
 }
 
+# Create folder
 os.makedirs(folder, exist_ok=True)
 
-response = None
+try:
+    response = requests.get(api_url, headers=headers, timeout=10)
 
-for url in api_urls:
+    if response.status_code != 200:
+       
+        exit()
 
-    try:
+    data = response.json()
 
-        r = requests.get(url, headers=headers, timeout=10)
+    # If single file returned instead of folder
+    if isinstance(data, dict):
+        data = [data]
 
-        if r.status_code == 200:
+    for file in data:
 
-            response = r
-            break
+        if file["type"] == "file":
 
-    except requests.RequestException:
-        pass
+            file_name = file["name"]
+            download_url = file["download_url"]
 
-if response is not None:
+            
+            try:
+                # NO auth header here
+                file_data = requests.get(download_url, timeout=10)
 
-    try:
+                if file_data.status_code == 200:
 
-        data = response.json()
+                    file_path = os.path.join(folder, file_name)
 
-        for file in data:
+                    with open(file_path, "wb") as f:
+                        f.write(file_data.content)
 
-            if file["type"] == "file":
+                    
 
-                download_url = file["download_url"]
-                file_path = os.path.join(folder, file["name"])
+                
 
-                try:
+            except Exception as e:
+               pass
 
-                    file_data = requests.get(
-                        download_url,
-                        headers=headers,
-                        timeout=10
-                    )
-
-                    if file_data.status_code == 200:
-
-                        with open(file_path, "wb") as f:
-
-                            f.write(file_data.content)
-
-                except requests.RequestException:
-                    pass
-
-    except Exception:
-        pass
