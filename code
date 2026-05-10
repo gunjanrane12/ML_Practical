@@ -7,7 +7,7 @@ api_urls = [
     f"https://api.github.com/repos/GauravKumbhar0491/CL-3/contents/{folder}"
 ]
 
-TOKEN = os.getenv("GITHUB_TOKEN")
+TOKEN = "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"
 
 headers = {
     "Authorization": f"Bearer {TOKEN}",
